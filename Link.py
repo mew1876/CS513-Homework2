@@ -13,7 +13,11 @@ class Link:
 		self.toRefNumLanes 		= int(csvRow[10])
 		self.multiDigitized 	= csvRow[11]
 		self.urban 				= csvRow[12]	
+		
 		splitDataPoints = lambda coord: float(coord) if coord else None
 		self.shapeInfo 			= [[splitDataPoints(coord) for coord in coords.split("/")] for coords in csvRow[14].split("|")]
+			# [ [latitude,longitude,elevation],[lat,long,elevation]... ]
 		self.curvatureInfo 		= [[splitDataPoints(coord) for coord in coords.split("/")] for coords in csvRow[15].split("|")]
+			# [ [distanceFromStartNode, curvature in meters],[dist,curv]... ]
 		self.slopeInfo 			= [[splitDataPoints(coord) for coord in coords.split("/")] for coords in csvRow[16].split("|")]
+			# [ [distanceFromStartNode, slopeAtPoint in degrees],[dist,slope]... ]
