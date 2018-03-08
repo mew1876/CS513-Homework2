@@ -43,7 +43,7 @@ if not os.path.isfile('LinksShelf.dat'):	# build the shelf
 		# loop through all links and put them in their grid square's mapping
 		for link in links:
 			gridX = int((link.shapeInfo[0][0] - linkDB["min"][0])/linkDB["step"][0])
-			gridY = int((link.shapeInfo[0][1] - linkDB["min"][0])/linkDB["step"][1])
+			gridY = int((link.shapeInfo[0][1] - linkDB["min"][1])/linkDB["step"][1])
 			if f"{gridX},{gridY}" not in linkDB:
 				linkDB[f"{gridX},{gridY}"] = []
 			linkDB[f"{gridX},{gridY}"].append(link)
