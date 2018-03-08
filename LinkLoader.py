@@ -5,12 +5,6 @@ GRID_DIMENSION = 20
 
 from Link import Link
 
-# with open('../Partition6467LinkData.csv', newline='') as csvFile:
-# 	reader = csv.reader(csvFile)
-# 	for row in reader:
-
-# todo: We'll need to be able to access the grid coords somehow, add to dictionary
-
 links = []
 if not os.path.isfile('LinksShelf.dat'):	# build the shelf
 	# Read CSV
@@ -43,7 +37,7 @@ if not os.path.isfile('LinksShelf.dat'):	# build the shelf
 	linkDB["min"] = (minLatitude,minLongitude)
 	linkDB["step"] = (latitudeStep,longitudeStep)
 
-	# todo: loop through all links and put them in their grid square's mapping
+	# loop through all links and put them in their grid square's mapping
 	with shelve.open('LinksShelf', writeback=True) as linkDB:
 		for link in links:
 			gridX = int((link.shapeInfo[0][0] - linkDB["min"][0])/linkDB["step"][0])
