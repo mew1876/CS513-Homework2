@@ -12,7 +12,8 @@ class Link:
 		self.fromRefNumLanes 	= int(csvRow[9])
 		self.toRefNumLanes 		= int(csvRow[10])
 		self.multiDigitized 	= csvRow[11]
-		self.urban 				= csvRow[12]		
-		self.shapeInfo 			= [[(lambda coord: float(coord) if coord else -1)(coord) for coord in coords.split("/")] for coords in csvRow[14].split("|")]
-		self.curvatureInfo 		= [[(lambda coord: float(coord) if coord else -1)(coord) for coord in coords.split("/")] for coords in csvRow[15].split("|")]
-		self.slopeInfo 			= [[(lambda coord: float(coord) if coord else -1)(coord) for coord in coords.split("/")] for coords in csvRow[16].split("|")]
+		self.urban 				= csvRow[12]	
+		splitDataPoints = lambda coord: float(coord) if coord else None
+		self.shapeInfo 			= [[splitDataPoints(coord) for coord in coords.split("/")] for coords in csvRow[14].split("|")]
+		self.curvatureInfo 		= [[splitDataPoints(coord) for coord in coords.split("/")] for coords in csvRow[15].split("|")]
+		self.slopeInfo 			= [[splitDataPoints(coord) for coord in coords.split("/")] for coords in csvRow[16].split("|")]
