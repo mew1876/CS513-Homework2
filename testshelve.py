@@ -23,5 +23,5 @@ if not os.path.isfile('ProbePointsShelf.dat'):	# build the shelf
 				probeDB[rowProbeID].append(row)
 		probeDB.close()
 	print("Loaded data from CSV into a shelf", time.perf_counter() - start, "seconds")
-# oops I accidentally built a shelf
+# oops I accidentally build a shelf
 
