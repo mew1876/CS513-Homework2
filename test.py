@@ -21,15 +21,23 @@ def mapMatch(probePoint):
 		topScore = -1
 		bestLink = None
 		for link in linkDB[f"{gridX},{gridY}"] + linkDB[f"{gridX+neighborX},{gridY+neighborY}"] + linkDB[f"{gridX+neighborX},{gridY}"] + linkDB[f"{gridX},{gridY+neighborY}"]:
-			currentDist = distToLine(link.shapeInfo[0], link.shapeInfo[len(link.shapeInfo) - 1], [probePoint.latitude, probePoint.longitude])
+			currentDist = distanceFromPointToSegment(link.shapeInfo[0], link.shapeInfo[len(link.shapeInfo) - 1], [probePoint.latitude, probePoint.longitude])
 			if currentDist > topScore:
 				topScore = currentDist
 				bestLink = link
 		print("Closest road is", topScore, "away")
 
-def distToLine(p1, p2, p3): # dist from p3 to the line p2 - p1
-	return abs((p2[1] - p1[1])*p3[0] - (p2[0] - p1[0])*p3[1] + p2[0]*p1[1] - p2[1]*p1[0]) / math.sqrt((p2[1] - p1[1]) ** 2 + (p2[0] - p1[0]) ** 2)
+def distanceBetweenPointsSquared(point1, point2):
+	return (point1[0] - point2[0]) ** 2 + (point1[1] - point2[1]) ** 2
+def distanceFromPointToSegment(segmentStart, segmentEnd, point): # point = point, segment = segmentEnd - segmentStart
+	lengthSquared = (segmentEnd[0] - segmentStart[0]) ** 2 + (segmentEnd[1] - segmentStart[1]) ** 2
+	if (lengthSquared == 0):
+  		return (point[0] - segmentEnd[0]) ** 2 + (point[1] - segmentEnd[1]) ** 2
+	t = ((point[0] - segmentEnd[0]) * (segmentStart[0] - segmentEnd[0]) + (point[1] - segmentEnd[1]) * (segmentStart[1] - segmentEnd[1])) / lengthSquared
+	t = max(0, min(1, t))
+	return math.sqrt(distanceBetweenPointsSquared(point, [segmentEnd[0] + t * (segmentStart[0] - segmentEnd[0]), segmentEnd[1] + t * (segmentStart[1] - segmentEnd[1])]))
 
 with shelve.open('ProbePointsShelf', writeback=True) as probeDB:
 	probePoint = probeDB["3496"][0]
 	mapMatch(probePoint)
+	# print(distanceFromPointToSegment([3,3],[-1,3],[0,1],))
