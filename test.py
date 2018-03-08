@@ -21,14 +21,18 @@ def mapMatch(probePoint):
 		topScore = -1
 		bestLink = None
 		for link in linkDB[f"{gridX},{gridY}"] + linkDB[f"{gridX+neighborX},{gridY+neighborY}"] + linkDB[f"{gridX+neighborX},{gridY}"] + linkDB[f"{gridX},{gridY+neighborY}"]:
-			currentDist = distToLine(link.shapeInfo[0], link.shapeInfo[len(link.shapeInfo) - 1], [probePoint.latitude, probePoint.longitude])
-			if currentDist > topScore:
-				topScore = currentDist
-				bestLink = link
+			for i in range(0, len(link.shapeInfo) - 1):
+				currentDist = distToLine(link.shapeInfo[i], link.shapeInfo[i+1], [probePoint.latitude, probePoint.longitude])
+				if currentDist > topScore:
+					topScore = currentDist
+					bestLink = link
 		print("Closest road is", topScore, "away")
 
 def distToLine(p1, p2, p3): # dist from p3 to the line p2 - p1
 	return abs((p2[1] - p1[1])*p3[0] - (p2[0] - p1[0])*p3[1] + p2[0]*p1[1] - p2[1]*p1[0]) / math.sqrt((p2[1] - p1[1]) ** 2 + (p2[0] - p1[0]) ** 2)
+
+def angleBetween(p1, p2, p3, p4): # angle between p2 - p1 and p4 - p3
+	pass
 
 with shelve.open('ProbePointsShelf', writeback=True) as probeDB:
 	probePoint = probeDB["3496"][0]
