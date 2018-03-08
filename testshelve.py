@@ -2,9 +2,7 @@ import csv
 import time
 import shelve
 import os.path
-import sys
 
-from Probe import Probe
 from ProbePoint import ProbePoint
 
 probes = []
@@ -20,8 +18,7 @@ if not os.path.isfile('ProbePointsShelf.dat'):	# build the shelf
 				rowProbeID = row[0]
 				if rowProbeID not in probeDB:
 					probeDB[rowProbeID] = []
-				probeDB[rowProbeID].append(row)
+				probeDB[rowProbeID].append(ProbePoint(row))
 		probeDB.close()
 	print("Loaded data from CSV into a shelf", time.perf_counter() - start, "seconds")
 # oops I accidentally build a shelf
-
