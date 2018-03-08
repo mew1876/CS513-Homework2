@@ -1,3 +1,5 @@
+import csv
+import time
 import shelve
 import os.path
 
@@ -9,7 +11,7 @@ links = []
 if not os.path.isfile('LinksShelf.dat'):	# build the shelf
 	# Read CSV
 	start = time.perf_counter();
-	print("creating shelf...")
+	print("creating link shelf...")
 	with open('../Partition6467LinkData.csv', newline='') as csvFile:
 		reader = csv.reader(csvFile)
 		maxLatitude = None
@@ -34,11 +36,11 @@ if not os.path.isfile('LinksShelf.dat'):	# build the shelf
 	# save required step and minimum values to determine grid squares probe points belong in later
 	latitudeStep = (maxLatitude - minLatitude)/GRID_DIMENSION
 	longitudeStep = (maxLongitude - minLongitude)/GRID_DIMENSION
-	linkDB["min"] = (minLatitude,minLongitude)
-	linkDB["step"] = (latitudeStep,longitudeStep)
-
-	# loop through all links and put them in their grid square's mapping
 	with shelve.open('LinksShelf', writeback=True) as linkDB:
+		linkDB["min"] = (minLatitude,minLongitude)
+		linkDB["step"] = (latitudeStep,longitudeStep)
+
+		# loop through all links and put them in their grid square's mapping
 		for link in links:
 			gridX = int((link.shapeInfo[0][0] - linkDB["min"][0])/linkDB["step"][0])
 			gridY = int((link.shapeInfo[0][1] - linkDB["min"][0])/linkDB["step"][1])
@@ -46,6 +48,6 @@ if not os.path.isfile('LinksShelf.dat'):	# build the shelf
 				linkDB[f"{gridX},{gridY}"] = []
 			linkDB[f"{gridX},{gridY}"].append(link)
 		linkDB.close()
-	print("Loaded data from CSV into a shelf", time.perf_counter() - start, "seconds")
+	print("Loaded data from link CSV into a shelf", time.perf_counter() - start, "seconds")
 # oops I accidentally build a shelf
 
