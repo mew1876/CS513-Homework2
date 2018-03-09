@@ -60,8 +60,11 @@ def kilometerDistanceFromPointToPoint(point1, point2):
 
 	return distance
 
-def angleBetween(p1, p2, p3, p4): # angle between p2 - p1 and p4 - p3
-	pass
+def angleBetween(pointHeading, p1, p2): # angle between pointHeading and p4 - p3
+	segmentHeading = math.degrees(math.atan2(p2[1] - p1[1], p2[0] - p1[0]))
+	if segmentHeading < 0:
+		segmentHeading += 360
+	return abs(pointHeading - segmentHeading)
 
 # with shelve.open('ProbePointsShelf', writeback=True) as probeDB:
 # 	probePoint = probeDB["3496"][0]
