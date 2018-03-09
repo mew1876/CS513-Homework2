@@ -38,8 +38,11 @@ def distanceFromPointToSegment(segmentStart, segmentEnd, point): # point = point
 	t = max(0, min(1, t))
 	return math.sqrt(distanceBetweenPointsSquared(point, [segmentEnd[0] + t * (segmentStart[0] - segmentEnd[0]), segmentEnd[1] + t * (segmentStart[1] - segmentEnd[1])]))
 
-def angleBetween(p1, p2, p3, p4): # angle between p2 - p1 and p4 - p3
-	pass
+def angleBetween(pointHeading, p1, p2): # angle between pointHeading and p4 - p3
+	segmentHeading = math.degrees(math.atan2(p2[1] - p1[1], p2[0] - p1[0]))
+	if segmentHeading < 0:
+		segmentHeading += 360
+	return abs(pointHeading - segmentHeading)
 
 with shelve.open('ProbePointsShelf', writeback=True) as probeDB:
 	probePoint = probeDB["3496"][0]
