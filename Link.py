@@ -21,3 +21,8 @@ class Link:
 			# [ [distanceFromStartNode, curvature in meters],[dist,curv]... ]
 		self.slopeInfo 			= [[splitDataPoints(coord) for coord in coords.split("/")] for coords in csvRow[16].split("|")]
 			# [ [distanceFromStartNode, slopeAtPoint in degrees],[dist,slope]... ]
+			# after calculated slope: [ [dist,slope,calculatedSlope]]
+	def __hash__(self):
+		return self.ID
+	def __eq__(self,other):
+		return self.ID == other.ID
