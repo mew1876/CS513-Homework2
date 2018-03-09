@@ -54,6 +54,15 @@ def kilometerDistanceFromPointToPoint(point1, point2):
 	distance = R * c
 	return distance
 
+def greatCircleAngle(point1,point2):
+	lat1 = math.radians(point1[0])
+	lon1 = math.radians(point1[1])
+	lat2 = math.radians(point2[0])
+	lon2 = math.radians(point2[1])
+	dlon = lon2 - lon1
+	dlat = lat2 - lat1
+	return math.atan(math.sqrt(	(math.cos(lat2)*math.sin(dlon))**2  +  (math.cos(lat1)*math.sin(lat2) - math.sin(lat1)*math.cos(lat2)*math.cos(dlon))**2	)   /   (math.sin(lat1)*math.sin(lat2) + math.cos(lat1)*math.cos(lat2)*math.cos(dlon)))
+
 def angleBetween(pointHeading, p1, p2): # angle between pointHeading and p4 - p3
 	segmentHeading = math.degrees(math.atan2(p2[1] - p1[1], p2[0] - p1[0]))
 	if segmentHeading < 0:
@@ -65,3 +74,4 @@ def angleBetween(pointHeading, p1, p2): # angle between pointHeading and p4 - p3
 # 	mapMatch(probePoint)
 # 	# print(distanceFromPointToSegment([3,3],[-1,3],[0,1],))
 # 	print(kilometerDistanceFromPointToPoint("",""))
+print(6373.0 * greatCircleAngle([60,12],[50,9]))
