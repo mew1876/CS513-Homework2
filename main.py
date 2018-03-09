@@ -15,8 +15,8 @@ if not os.path.isfile('ProbePointsShelf.dat'):
 start = time.perf_counter()
 count = 0
 probePointMatches = {}
-with shelve.open('ProbePointsShelf', writeback=True) as probeDB:
-	with shelve.open('LinksShelf', writeback=True) as linkDB:
+with shelve.open('ProbePointsShelf', flag ='r', writeback=True) as probeDB:
+	with shelve.open('LinksShelf', flag = 'r', writeback=True) as linkDB:
 		for probe in probeDB:
 			for probePoint in probeDB[probe]:
 				matchedLinkData = MapMatcher.mapMatch(probePoint, linkDB)
@@ -24,7 +24,7 @@ with shelve.open('ProbePointsShelf', writeback=True) as probeDB:
 					continue
 				if matchedLinkData[0].ID not in probePointMatches:
 					probePointMatches[matchedLinkData[0].ID] = []
-				probePointMatches[matchedLinkData[0].ID].append([probePoint,matchedLinkData[1],matchedLinkData[2],probe]) # save probe point info [point,distancefromPointtoLink,distanceFromStartNode, probeID] in link's dictionary entry
+				probePointMatches[matchedLinkData[0].ID].append([probePoint,matchedLinkData[1],matchedLinkData[2],probe,matchedLinkData[0]]) # save probe point info [point,distancefromPointtoLink,distanceFromStartNode, probeID] in link's dictionary entry
 				count += 1
 				if count % 10000 == 0:
 					print(count, "probe points processed after", time.perf_counter() - start, "seconds")
@@ -34,7 +34,8 @@ with shelve.open('ProbePointsShelf', writeback=True) as probeDB:
 			prevMatchInfo = None
 			linkPointIndex = 0 # todo: we need to figure out where we are all the time
 			linkPointSlope = None
-			lenLinkPoints = len(link.slopeInfo)
+			currentSlopeInfo = probePointMatches[link][4].slopeInfo
+			lenLinkPoints = len(currentSlopeInfo)
 			for matchInfo in sort(probePointMatches[link], key = lambda match: match[2]): # key = distanceFromStartNode
 				slope = None
 				if prevMatchInfo is None:
@@ -42,16 +43,16 @@ with shelve.open('ProbePointsShelf', writeback=True) as probeDB:
 					continue
 				for i in range(linkPointIndex,lenLinkPoints):
 					# linkPointSlope = link.slopeInfo[i][0]
-					if link.slopeInfo[i][0] < prevMatchInfo[2]:
+					if currentSlopeInfo[i][0] < prevMatchInfo[2]:
 						linkPointIndex = i+1
-					elif link.slopeInfo[i][0] > matchInfo[2]:
+					elif currentSlopeInfo[i][0] > matchInfo[2]:
 						break
 					else:
 						if slope is None:
 							# calculate slope between the 2 matched points
 							slope = (matchInfo[0].altitude - prevMatchInfo[0].altitude) / (matchInfo[2] - prevMatchInfo[2])
 						# save slope!
-						link.slopeInfo[i].append(slope)
+						currentSlopeInfo[i].append(slope)
 		# output to csv
 		with open('mapMatches.csv', 'w', newline='') as matchedCSV:
 			matchedCSVWriter = csv.writer(matchedCSV, delimiter=',', quoting=csv.QUOTE_MINIMAL)
@@ -66,7 +67,7 @@ with shelve.open('ProbePointsShelf', writeback=True) as probeDB:
 		with open('slopeMatches.csv', 'w', newline='') as slopeCSV:
 			slopeCSVWriter = csv.writer(slopeCSV, delimiter=',', quoting=csv.QUOTE_MINIMAL)
 			for link in linkDB:
-				for slopeInfoValue in link.slopeInfo:
+				for slopeInfoValue in probePointMatches[link][4].slopeInfo:
 					if len(slopeInfoValue) < 3:
 						continue
 					linkID = link.ID
