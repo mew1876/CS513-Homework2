@@ -1,6 +1,9 @@
-import time
+import os.path
 
+import Loader
 
-start = time.perf_counter();
-from ProbeLoader import * # run ProbeLoader
-from LinkLoader import * # run LinkLoader
+if not os.path.isfile('LinksShelf.dat'):
+	Loader.loadLinks()
+if not os.path.isfile('ProbePointsShelf.dat'):
+	Loader.loadProbePoints()
+

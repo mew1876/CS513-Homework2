@@ -1,17 +1,16 @@
 import csv
 import time
 import shelve
-import os.path
+
+from Link import Link
+from ProbePoint import ProbePoint
 
 GRID_DIMENSION = 20
 
-from Link import Link
-
-links = []
-if not os.path.isfile('LinksShelf.dat'):	# build the shelf
-	# Read CSV
+def loadLinks():
 	start = time.perf_counter();
 	print("creating link shelf...")
+	links = []
 	with open('../Partition6467LinkData.csv', newline='') as csvFile:
 		reader = csv.reader(csvFile)
 		maxLatitude = None
@@ -19,7 +18,6 @@ if not os.path.isfile('LinksShelf.dat'):	# build the shelf
 		maxLongitude = None
 		minLongitude = None
 		for row in reader:
-			# print("row: " + str(row))
 			tempLink = Link(row)
 			links.append(tempLink)
 
@@ -48,6 +46,20 @@ if not os.path.isfile('LinksShelf.dat'):	# build the shelf
 				linkDB[f"{gridX},{gridY}"] = []
 			linkDB[f"{gridX},{gridY}"].append(link)
 		linkDB.close()
-	print("Loaded data from link CSV into a shelf", time.perf_counter() - start, "seconds")
-# oops I accidentally build a shelf
+	print("Loaded link data in ", time.perf_counter() - start, "seconds")
+	# oops I accidentally build a shelf
 
+def loadProbePoints():
+	start = time.perf_counter();
+	with shelve.open('ProbePointsShelf', writeback=True) as probeDB:
+		print("creating probe shelf...")
+		with open('../Partition6467ProbePoints.csv', newline='') as csvFile:
+			reader = csv.reader(csvFile)
+			for row in reader:
+				rowProbeID = row[0]
+				if rowProbeID not in probeDB:
+					probeDB[rowProbeID] = []
+				probeDB[rowProbeID].append(ProbePoint(row))
+		probeDB.close()
+	print("Loaded data from probe CSV into a shelf", time.perf_counter() - start, "seconds")
+	# oops I accidentally build a shelf
