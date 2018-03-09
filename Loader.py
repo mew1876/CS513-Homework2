@@ -5,7 +5,7 @@ import shelve
 from Link import Link
 from ProbePoint import ProbePoint
 
-GRID_DIMENSION = 20
+GRID_DIMENSION = 1000
 
 def loadLinks():
 	start = time.perf_counter();
