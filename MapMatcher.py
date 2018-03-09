@@ -14,6 +14,11 @@ DISTANCE_ANGLE_WEIGHT = 0.5
 # 			distance from reference node - trust slopeInfo!!!!!!
 
 # snap to shapeInfo points? or no?
+# get real distance from ref node to map matched point
+# 	for every link we go to
+# 	if it has 2 or more mapped points on it
+# 		go to every pair of mapped points on the link and get the slope between them
+# 		then any shape info point between those takes on the slope that is calculated
 
 
 
