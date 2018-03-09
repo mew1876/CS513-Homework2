@@ -54,26 +54,26 @@ with shelve.open('ProbePointsShelf', writeback=True) as probeDB:
 						link.slopeInfo[i].append(slope)
 		# output to csv
 		with open('mapMatches.csv', 'w', newline='') as matchedCSV:
-		    matchedCSVWriter = csv.writer(matchedCSV, delimiter=',', quoting=csv.QUOTE_MINIMAL)
-		    for link in probePointMatches:
-		    	for match in probePointMatches[link]:
-		    		probeID = match[3] # probePoint.probeID
-		    		probePointLat = match[0].latitude
-		    		probePointLong = match[1].longitude
-		    		matchedLinkID = link.ID
-		    		distanceToLink = match[1]
-		    		matchedCSVWriter.writerow([str(probeID),str(probePointLat),str(probePointLong),str(matchedLinkID),str(distanceToLink)])
+			matchedCSVWriter = csv.writer(matchedCSV, delimiter=',', quoting=csv.QUOTE_MINIMAL)
+			for link in probePointMatches:
+				for match in probePointMatches[link]:
+					probeID = match[3] # probePoint.probeID
+					probePointLat = match[0].latitude
+					probePointLong = match[1].longitude
+					matchedLinkID = link.ID
+					distanceToLink = match[1]
+					matchedCSVWriter.writerow([str(probeID),str(probePointLat),str(probePointLong),str(matchedLinkID),str(distanceToLink)])
 		with open('slopeMatches.csv', 'w', newline='') as slopeCSV:
 			slopeCSVWriter = csv.writer(slopeCSV, delimiter=',', quoting=csv.QUOTE_MINIMAL)
-		    for link in linkDB:
-		    	for slopeInfoValue in link.slopeInfo:
-		    		if len(slopeInfoValue) < 3:
-		    			continue
-		    		linkID = link.ID
-		    		distanceFromStartNode = slopeInfoValue[0]
-		    		linkSlope = slopeInfoValue[1]
-		    		calculatedSlope = slopeInfoValue[2]
-		    		distancefromPointtoLink = probePointMatches[link][1]
-		    		slopeCSVWriter.writerow([str(linkID),str(distanceFromStartNode),str(linkSlope),str(calculatedSlope),str(distanceFromPointtoLink)
-		linkDB.close()
+			for link in linkDB:
+				for slopeInfoValue in link.slopeInfo:
+					if len(slopeInfoValue) < 3: 
+						continue
+					linkID = link.ID
+					distanceFromStartNode = slopeInfoValue[0]
+					linkSlope = slopeInfoValue[1]
+					calculatedSlope = slopeInfoValue[2]
+					distancefromPointtoLink = probePointMatches[link][1]
+					slopeCSVWriter.writerow([str(linkID),str(distanceFromStartNode),str(linkSlope),str(calculatedSlope),str(distanceFromPointtoLink)])
+		linkDB.close()						
 	probeDB.close()
