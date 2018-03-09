@@ -4,25 +4,6 @@ import math
 DISTANCE_ANGLE_WEIGHT = 0.5
 
 
-# compare slopes
-# 	probe point slope
-# 		elevation AND elevation of next and/or previous probe point
-# 	matched link shape point
-# 		save link and shape point that probe point matched to
-# 	link shape point slope
-# 		slope from slopeInfo
-# 			distance from reference node - trust slopeInfo!!!!!!
-
-# snap to shapeInfo points? or no?
-# get real distance from ref node to map matched point
-# 	for every link we go to
-# 	if it has 2 or more mapped points on it
-# 		go to every pair of mapped points on the link and get the slope between them
-# 		then any slope info point between those takes on the slope that is calculated
-
-
-
-
 def mapMatch(probePoint, linkDB): # returns (link, distanceAway, relativeAngle) for the chosen link
 	# fetch min and step for latitude and longitude to calculate necessary grid squares
 	# with shelve.open('LinksShelf', writeback=True) as linkDB:
@@ -53,12 +34,17 @@ def mapMatch(probePoint, linkDB): # returns (link, distanceAway, relativeAngle) 
 	for link in neighborhoodLinks:
 		distfromRefNode = 0
 		for i in range(0, len(link.shapeInfo) - 1):
-			currentDist = distanceFromPointToSegment(link.shapeInfo[i], link.shapeInfo[i+1], [probePoint.latitude, probePoint.longitude])
+			currentDist, t = distanceFromPointToSegment(link.shapeInfo[i], link.shapeInfo[i+1], [probePoint.latitude, probePoint.longitude])
 			currentAngle = angleBetween(probePoint.heading, link.shapeInfo[i], link.shapeInfo[i+1])
 			score = DISTANCE_ANGLE_WEIGHT * currentDist + (1 - DISTANCE_ANGLE_WEIGHT) * currentAngle
+
+			segmentLength = distanceFromPointToSegment(link.shapeInfo[i], link.shapeInfo[i], link.shapeInfo[i+1])
+
+
 			if bestScore is None or score < bestScore:
 				bestScore = score
-				bestLink = (link, currentDist, currentAngle)
+				bestLink = (link, currentDist, distfromRefNode + t * segmentLength)
+			distfromRefNode += segmentLength
 
 	return bestLink
 
@@ -83,7 +69,7 @@ def distanceFromPointToSegment(segmentStart, segmentEnd, point): # point = point
   		return 6373.0 * math.sqrt((point[0] - segmentEnd[0]) ** 2 + (point[1] - segmentEnd[1]) ** 2)
 	t = ((point[0] - segmentEnd[0]) * latDiff + (point[1] - segmentEnd[1]) * longDiff) / lengthSquared
 	t = max(0, min(1, t))
-	return 6373.0 * math.sqrt(distanceBetweenPointsSquared(point, [segmentEnd[0] + t * latDiff, segmentEnd[1] + t * longDiff]))
+	return (6373.0 * math.sqrt(distanceBetweenPointsSquared(point, [segmentEnd[0] + t * latDiff, segmentEnd[1] + t * longDiff])), 1 - t)
 
 def greatCircleAngle(point1,point2):
 	lat1 = math.radians(point1[0])
