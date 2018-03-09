@@ -71,9 +71,9 @@ def loadLinks():
 
 def loadProbePoints():
 	start = time.perf_counter();
-	with shelve.open('ProbePointsShelf', writeback=True) as probeDB:
+	with shelve.open('mini', writeback=True) as probeDB:
 		print("creating probe shelf...")
-		with open('../Partition6467ProbePoints.csv', newline='') as csvFile:
+		with open('../mini.csv', newline='') as csvFile:
 			reader = csv.reader(csvFile)
 			for row in reader:
 				rowProbeID = row[0]

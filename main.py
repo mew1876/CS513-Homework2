@@ -9,13 +9,13 @@ import MapMatcher
 # Load data from CSVs if not pre-loaded
 if not os.path.isfile('LinksShelf.dat'):
 	Loader.loadLinks()
-if not os.path.isfile('ProbePointsShelf.dat'):
+if not os.path.isfile('mini.dat'):
 	Loader.loadProbePoints()
 
 start = time.perf_counter()
 count = 0
 probePointMatches = {}
-with shelve.open('ProbePointsShelf', flag ='r', writeback=True) as probeDB:
+with shelve.open('mini', flag ='r', writeback=True) as probeDB:
 	with shelve.open('LinksShelf', flag = 'r', writeback=True) as linkDB:
 		for probe in probeDB:
 			for probePoint in probeDB[probe]:
@@ -24,7 +24,8 @@ with shelve.open('ProbePointsShelf', flag ='r', writeback=True) as probeDB:
 					continue
 				if matchedLinkData[0].ID not in probePointMatches:
 					probePointMatches[matchedLinkData[0].ID] = []
-				probePointMatches[matchedLinkData[0].ID].append([probePoint,matchedLinkData[1],matchedLinkData[2],probe,matchedLinkData[0]]) # save probe point info [point,distancefromPointtoLink,distanceFromStartNode, probeID] in link's dictionary entry
+				probePointMatches[matchedLinkData[0].ID].append([probePoint,matchedLinkData[1],matchedLinkData[2],probe,matchedLinkData[0]]) 
+				# save probe point info linklID = [[point,distancefromPointtoLink,distanceFromStartNode, probeID],[]...] in link's dictionary entry
 				count += 1
 				if count % 10000 == 0:
 					print(count, "probe points processed after", time.perf_counter() - start, "seconds")
@@ -34,9 +35,8 @@ with shelve.open('ProbePointsShelf', flag ='r', writeback=True) as probeDB:
 			prevMatchInfo = None
 			linkPointIndex = 0 # todo: we need to figure out where we are all the time
 			linkPointSlope = None
-			currentSlopeInfo = probePointMatches[link][4].slopeInfo
-			lenLinkPoints = len(currentSlopeInfo)
 			for matchInfo in sort(probePointMatches[link], key = lambda match: match[2]): # key = distanceFromStartNode
+				currentSlopeInfo = matchInfo[4].slopeInfo
 				slope = None
 				if prevMatchInfo is None:
 					prevMatchInfo = matchInfo # todo: do we need this or should we save the values we use instead?
@@ -66,16 +66,16 @@ with shelve.open('ProbePointsShelf', flag ='r', writeback=True) as probeDB:
 					matchedCSVWriter.writerow([str(probeID),str(probePointLat),str(probePointLong),str(matchedLinkID),str(distanceToLink)])
 		with open('slopeMatches.csv', 'w', newline='') as slopeCSV:
 			slopeCSVWriter = csv.writer(slopeCSV, delimiter=',', quoting=csv.QUOTE_MINIMAL)
-			for link in linkDB:
-				for slopeInfoValue in probePointMatches[link][4].slopeInfo:
-					if len(slopeInfoValue) < 3:
-						continue
-					linkID = link.ID
-					distanceFromStartNode = slopeInfoValue[0]
-					linkSlope = slopeInfoValue[1]
-					calculatedSlope = slopeInfoValue[2]
-					distancefromPointtoLink = probePointMatches[link][1]
-					slopeCSVWriter.writerow([str(linkID),str(distanceFromStartNode),str(linkSlope),str(calculatedSlope),str(distanceFromPointtoLink)])
+			for link in probePointMatches:
+				for matchInfo in probePointMatches[link]:
+					for slopeInfoValue in matchInfo[4].slopeInfo:
+						if len(slopeInfoValue) < 3:
+							continue
+						linkID = link.ID
+						distanceFromStartNode = slopeInfoValue[0]
+						linkSlope = slopeInfoValue[1]
+						calculatedSlope = slopeInfoValue[2]
+						slopeCSVWriter.writerow([str(linkID),str(distanceFromStartNode),str(linkSlope),str(calculatedSlope)])
 		linkDB.close()
 	# end linkDB with
 	probeDB.close()
