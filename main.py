@@ -21,3 +21,5 @@ with shelve.open('ProbePointsShelf', writeback=True) as probeDB:
 				count += 1
 				if count % 10000 == 0:
 					print(count, "probe points processed after", time.perf_counter() - start, "seconds")
+		linkDB.close()
+	probeDB.close()
