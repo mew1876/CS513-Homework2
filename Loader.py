@@ -57,6 +57,7 @@ def loadLinks():
 					gridSquares.append(gridSquare)
 					if gridSquare not in linkDB:
 						linkDB[gridSquare] = []
+					# print(link.slopeInfo)
 					linkDB[gridSquare].append(link)
 			# for gridSquare in gridSquares:
 			# 	if gridSquare not in linkDB:
@@ -71,9 +72,9 @@ def loadLinks():
 
 def loadProbePoints():
 	start = time.perf_counter();
-	with shelve.open('mini', writeback=True) as probeDB:
+	with shelve.open('ProbePointsShelf', writeback=True) as probeDB:
 		print("creating probe shelf...")
-		with open('../mini.csv', newline='') as csvFile:
+		with open('../Partition6467ProbePoints.csv', newline='') as csvFile:
 			reader = csv.reader(csvFile)
 			for row in reader:
 				rowProbeID = row[0]

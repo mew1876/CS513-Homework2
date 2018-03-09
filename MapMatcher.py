@@ -32,6 +32,9 @@ def mapMatch(probePoint, linkDB): # returns (link, distanceAway, relativeAngle) 
 
 	for link in neighborhoodLinks:
 		distfromRefNode = 0
+
+		# print("MATCHER",link.slopeInfo)
+
 		for i in range(0, len(link.shapeInfo) - 1):
 			currentDist, t = distanceFromPointToSegment(link.shapeInfo[i], link.shapeInfo[i+1], [probePoint.latitude, probePoint.longitude])
 			currentAngle = angleBetween(probePoint.heading, link.shapeInfo[i], link.shapeInfo[i+1])
