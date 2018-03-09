@@ -3,6 +3,21 @@ import math
 
 DISTANCE_ANGLE_WEIGHT = 0.5
 
+
+# compare slopes
+# 	probe point slope
+# 		elevation AND elevation of next and/or previous probe point
+# 	matched link shape point
+# 		save link and shape point that probe point matched to
+# 	link shape point slope
+# 		slope from slopeInfo
+# 			distance from reference node - trust slopeInfo!!!!!!
+
+# snap to shapeInfo points? or no?
+
+
+
+
 def mapMatch(probePoint, linkDB): # returns (link, distanceAway, relativeAngle) for the chosen link
 	# fetch min and step for latitude and longitude to calculate necessary grid squares
 	# with shelve.open('LinksShelf', writeback=True) as linkDB:
@@ -31,6 +46,7 @@ def mapMatch(probePoint, linkDB): # returns (link, distanceAway, relativeAngle) 
 			neighborhoodLinks = neighborhoodLinks + linkDB[coords]
 
 	for link in neighborhoodLinks:
+		distfromRefNode = 0
 		for i in range(0, len(link.shapeInfo) - 1):
 			currentDist = distanceFromPointToSegment(link.shapeInfo[i], link.shapeInfo[i+1], [probePoint.latitude, probePoint.longitude])
 			currentAngle = angleBetween(probePoint.heading, link.shapeInfo[i], link.shapeInfo[i+1])
@@ -38,6 +54,7 @@ def mapMatch(probePoint, linkDB): # returns (link, distanceAway, relativeAngle) 
 			if bestScore is None or score < bestScore:
 				bestScore = score
 				bestLink = (link, currentDist, currentAngle)
+
 	return bestLink
 
 def distanceBetweenPointsSquared(point1, point2):
