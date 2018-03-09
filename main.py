@@ -76,5 +76,6 @@ with shelve.open('ProbePointsShelf', writeback=True) as probeDB:
 					distancefromPointtoLink = probePointMatches[link][1]
 					slopeCSVWriter.writerow([str(linkID),str(distanceFromStartNode),str(linkSlope),str(calculatedSlope),str(distanceFromPointtoLink)])
 		linkDB.close()
-	# end with linkDB
+	# end linkDB with
 	probeDB.close()
+#end probeDB with
