@@ -31,27 +31,38 @@ def mapMatch(probePoint):
 def distanceBetweenPointsSquared(point1, point2):
 	return (point1[0] - point2[0]) ** 2 + (point1[1] - point2[1]) ** 2
 def distanceFromPointToSegment(segmentStart, segmentEnd, point): # point = point, segment = segmentEnd - segmentStart
-	# lengthSquared = distanceBetweenPointsSquared(segmentEnd,segmentStart)
-	lengthSquared = kilometerDistanceFromPointToPoint(segmentEnd,segmentStart) ** 2
+	# convert to radians
+	segmentStart = [math.radians(segmentStart[0]), math.radians(segmentStart[1])]
+	segmentEnd = [math.radians(segmentEnd[0]), math.radians(segmentEnd[1])]
+	point = [math.radians(point[0]), math.radians(point[1])]
+
+	# adjust longitude to be on same scale as latitude
+	segmentStart[1] *= math.cos(segmentStart[0])
+	segmentEnd[1] *= math.cos(segmentEnd[0])
+	point[1] *= math.cos(point[0])
+
+	lengthSquared = (segmentEnd[0] - segmentStart[0]) ** 2 + (segmentEnd[1] - segmentStart[1]) ** 2
 	if (lengthSquared == 0):
-  		# return math.sqrt(distanceBetweenPointsSquared(point,segmentEnd))
-  		return kilometerDistanceFromPointToPoint(point,segmentEnd)
+  		return 6373.0 * math.sqrt((point[0] - segmentEnd[0]) ** 2 + (point[1] - segmentEnd[1]) ** 2)
 	t = ((point[0] - segmentEnd[0]) * (segmentStart[0] - segmentEnd[0]) + (point[1] - segmentEnd[1]) * (segmentStart[1] - segmentEnd[1])) / lengthSquared
 	t = max(0, min(1, t))
-	# return math.sqrt(distanceBetweenPointsSquared(point, [segmentEnd[0] + t * (segmentStart[0] - segmentEnd[0]), segmentEnd[1] + t * (segmentStart[1] - segmentEnd[1])]))
-	return kilometerDistanceFromPointToPoint(point,[segmentEnd[0] + t * (segmentStart[0] - segmentEnd[0]), segmentEnd[1] + t * (segmentStart[1] - segmentEnd[1])])
+	return 6373.0 * math.sqrt(distanceBetweenPointsSquared(point, [segmentEnd[0] + t * (segmentStart[0] - segmentEnd[0]), segmentEnd[1] + t * (segmentStart[1] - segmentEnd[1])]))
 
 def kilometerDistanceFromPointToPoint(point1, point2):
-	R = 6373.0 # approximate radius of earth in km
-	lat1 = math.radians(point1[0])
-	lon1 = math.radians(point1[1])
-	lat2 = math.radians(point2[0])
-	lon2 = math.radians(point2[1])
-	dlon = lon2 - lon1
-	dlat = lat2 - lat1
-	a = math.sin(dlat / 2)**2 + math.cos(lat1) * math.cos(lat2) * math.sin(dlon / 2)**2
+	# approximate radius of earth in km
+	R = 6373.0
+
+	dlon = point2[1] - point1[1]
+	dlat = point2[0] - point1[0]
+
+	a = math.sin(dlat / 2)**2 + math.cos(point1[0]) * math.cos(point2[0]) * math.sin(dlon / 2)**2
 	c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
+
 	distance = R * c
+
+	# print("Result:", distance)
+	# print("Should be:", 278.546, "km")
+
 	return distance
 
 def angleBetween(pointHeading, p1, p2): # angle between pointHeading and p4 - p3
@@ -63,5 +74,5 @@ def angleBetween(pointHeading, p1, p2): # angle between pointHeading and p4 - p3
 # with shelve.open('ProbePointsShelf', writeback=True) as probeDB:
 # 	probePoint = probeDB["3496"][0]
 # 	mapMatch(probePoint)
-# 	# print(distanceFromPointToSegment([3,3],[-1,3],[0,1],))
+# 	print(distanceFromPointToSegment([51,9],[51.5,9.2],[51.5,9.1]))
 # 	print(kilometerDistanceFromPointToPoint("",""))
