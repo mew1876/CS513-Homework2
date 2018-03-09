@@ -83,7 +83,5 @@ def angleBetween(pointHeading, p1, p2): # angle between pointHeading and p4 - p3
 # with shelve.open('ProbePointsShelf', writeback=True) as probeDB:
 # 	probePoint = probeDB["3496"][0]
 # 	mapMatch(probePoint)
-# 	# print(distanceFromPointToSegment([3,3],[-1,3],[0,1],))
 # 	print(distanceFromPointToSegment([51,9],[51.5,9.2],[51.5,9.1]))
 # 	print(kilometerDistanceFromPointToPoint("",""))
-print(6373.0 * greatCircleAngle([60,12],[50,9]))
