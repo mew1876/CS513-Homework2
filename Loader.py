@@ -38,13 +38,33 @@ def loadLinks():
 		linkDB["min"] = (minLatitude,minLongitude)
 		linkDB["step"] = (latitudeStep,longitudeStep)
 
-		# loop through all links and put them in their grid square's mapping
+		# # loop through all links and put them in their grid square's mapping
+		# for link in links:
+		# 	gridX = int((link.shapeInfo[0][0] - linkDB["min"][0])/linkDB["step"][0])
+		# 	gridY = int((link.shapeInfo[0][1] - linkDB["min"][1])/linkDB["step"][1])
+		# 	if f"{gridX},{gridY}" not in linkDB:
+		# 		linkDB[f"{gridX},{gridY}"] = []
+		# 	linkDB[f"{gridX},{gridY}"].append(link)
+		
+		# loop thorugh all links and put them in all of their shape points' grid square mappings
 		for link in links:
-			gridX = int((link.shapeInfo[0][0] - linkDB["min"][0])/linkDB["step"][0])
-			gridY = int((link.shapeInfo[0][1] - linkDB["min"][1])/linkDB["step"][1])
-			if f"{gridX},{gridY}" not in linkDB:
-				linkDB[f"{gridX},{gridY}"] = []
-			linkDB[f"{gridX},{gridY}"].append(link)
+			gridSquares = []
+			for point in link.shapeInfo:
+				gridX = int((point[0] - linkDB["min"][0])/linkDB["step"][0])
+				gridY = int((point[1] - linkDB["min"][1])/linkDB["step"][1])
+				gridSquare = f"{gridX},{gridY}"
+				if gridSquare not in gridSquares:
+					gridSquares.append(gridSquare)
+					if gridSquare not in linkDB:
+						linkDB[gridSquare] = []
+					linkDB[gridSquare].append(link)
+			# for gridSquare in gridSquares:
+			# 	if gridSquare not in linkDB:
+			# 		linkDB[gridSquare] = []
+			# 	linkDB[gridSquare].append(link)
+
+
+
 		linkDB.close()
 	print("Loaded link data in ", time.perf_counter() - start, "seconds")
 	# oops I accidentally build a shelf
